@@ -42,11 +42,7 @@ public class MainActivity extends AppCompatActivity {
     // TODO (15) Add a class file called ForecastAdapter
     // Within ForecastAdapterViewHolder ///////////////////////////////////////////////////////////
 
-    // TODO (18) Create a public final TextView variable called mWeatherTextView
 
-    // TODO (19) Create a constructor for this class that accepts a View as a parameter
-    // TODO (20) Call super(view) within the constructor for ForecastAdapterViewHolder
-    // TODO (21) Using view.findViewById, get a reference to this layout's TextView and save it to mWeatherTextView
     // Within ForecastAdapterViewHolder ///////////////////////////////////////////////////////////
 
 
