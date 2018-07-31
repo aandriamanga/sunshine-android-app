@@ -21,6 +21,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
@@ -36,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView mWeatherTextView;
 
+    // COMPLETE (6) Add a TextView variable for the error message display
+    private TextView mErrorMessageTextView;
+
+    // COMPLETE (16) Add a ProgressBar variable to show and hide the progress bar
+    private ProgressBar mLoadingContentProgressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -50,6 +58,12 @@ public class MainActivity extends AppCompatActivity {
          */
         mWeatherTextView = (TextView) findViewById(R.id.tv_weather_data);
 
+        // COMPLETE (7) Find the TextView for the error message using findViewById
+        mErrorMessageTextView = (TextView) findViewById(R.id.tv_error_message);
+
+        // COMPLETE (17) Find the ProgressBar using findViewById
+        mLoadingContentProgressBar = (ProgressBar) findViewById(R.id.pb_loading_content);
+
         /* Once all of our views are setup, we can load the weather data. */
         loadWeatherData();
     }
@@ -59,11 +73,30 @@ public class MainActivity extends AppCompatActivity {
      * background method to get the weather data in the background.
      */
     private void loadWeatherData() {
+        // COMPLETE (20) Call showWeatherDataView before executing the AsyncTask
+        showWeatherDataView();
         String location = SunshinePreferences.getPreferredWeatherLocation(this);
         new FetchWeatherTask().execute(location);
     }
 
+    // COMPLETE (8) Create a method called showWeatherDataView that will hide the error message and show the weather data
+    private void showWeatherDataView() {
+        mWeatherTextView.setVisibility(View.VISIBLE);
+        mErrorMessageTextView.setVisibility(View.INVISIBLE);
+    }
+
+    // COMPLETE (9) Create a method called showErrorMessage that will hide the weather data and show the error message
+    private void showErrorMessage() {
+        mWeatherTextView.setVisibility(View.INVISIBLE);
+        mErrorMessageTextView.setVisibility(View.VISIBLE);
+    }
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+
+        // COMPLETE (18) Within your AsyncTask, override the method onPreExecute and show the loading indicator
+        @Override
+        protected void onPreExecute() {
+            mLoadingContentProgressBar.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected String[] doInBackground(String... params) {
@@ -93,7 +126,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String[] weatherData) {
+            // COMPLETE (19) As soon as the data is finished loading, hide the loading indicator
+            mLoadingContentProgressBar.setVisibility(View.INVISIBLE);
+
             if (weatherData != null) {
+                // COMPLETE (11) If the weather data was not null, make sure the data view is visible
+                showWeatherDataView();
                 /*
                  * Iterate through the array and append the Strings to the TextView. The reason why we add
                  * the "\n\n\n" after the String is to give visual separation between each String in the
@@ -102,16 +140,15 @@ public class MainActivity extends AppCompatActivity {
                 for (String weatherString : weatherData) {
                     mWeatherTextView.append((weatherString) + "\n\n\n");
                 }
+            }else {
+                // COMPLETE (10) If the weather data was null, show the error message
+                showErrorMessage();
             }
+
+
         }
     }
 
-    // COMPLETE (2) Create a menu resource in res/menu/ called forecast.xml
-    // COMPLETE (3) Add one item to the menu with an ID of action_refresh
-    // COMPLETE (4) Set the title of the menu item to "Refresh" using strings.xml
-
-    // COMPLETED (5) Override onCreateOptionsMenu to inflate the menu for this Activity
-    // COMPLETED (6) Return true to display the menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         /* Use AppCompatActivity's method getMenuInflater to get a handle on the menu inflater */
@@ -122,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    // COMPLETED (7) Override onOptionsItemSelected to handle clicks on the refresh button
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -135,5 +171,4 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 }
