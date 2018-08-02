@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.android.recyclerview"
-        minSdkVersion 10
+        minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -22,4 +22,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:25.1.0'
     implementation 'com.android.support:recyclerview-v7:25.1.0'
+    def appCenterSdkVersion = '1.7.0'
+    implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
+    implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
 }
+

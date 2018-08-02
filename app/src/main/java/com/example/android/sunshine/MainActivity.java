@@ -28,6 +28,9 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
 
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.utilities.NetworkUtils;
@@ -47,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        AppCenter.start(getApplication(), "058a88f4-8ac1-42f6-bc51-1f9e839b4aee", Analytics.class, Crashes.class);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
 
