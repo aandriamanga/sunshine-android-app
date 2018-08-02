@@ -33,22 +33,10 @@ import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 
 import java.net.URL;
 
+// TODO (8) Implement ForecastAdapterOnClickHandler from the MainActivity
 public class MainActivity extends AppCompatActivity {
 
-    // Within forecast_list_item.xml //////////////////////////////////////////////////////////////
-    // COMPLETE (5) Add a layout for an item in the list called forecast_list_item.xml
-    // Within forecast_list_item.xml //////////////////////////////////////////////////////////////
-
-
-    // Within ForecastAdapter.java /////////////////////////////////////////////////////////////////
-    // COMPLETE (15) Add a class file called ForecastAdapter
-    // Within ForecastAdapter.java /////////////////////////////////////////////////////////////////
-
-
-    // COMPLETE (33) Delete mWeatherTextView
-    // COMPLETE (34) Add a private RecyclerView variable called mRecyclerView
     private RecyclerView mRecyclerView;
-    // COMPLETE (35) Add a private ForecastAdapter variable called mForecastAdapter
     private ForecastAdapter mForecastAdapter;
 
     private TextView mErrorMessageDisplay;
@@ -60,44 +48,38 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
 
-        // COMPLETE (36) Delete the line where you get a reference to mWeatherTextView
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
          */
-        // COMPLETE (37) Use findViewById to get a reference to the RecyclerView
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_forecast);
-
-
 
         /* This TextView is used to display errors and will be hidden if there are no errors */
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
 
-        // COMPLETE (38) Create layoutManager, a LinearLayoutManager with VERTICAL orientation and shouldReverseLayout == false
         /*
          * LinearLayoutManager can support HORIZONTAL or VERTICAL orientations. The reverse layout
          * parameter is useful mostly for HORIZONTAL layouts that should reverse for right to left
          * languages.
          */
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        // COMPLETE (39) Set the layoutManager on mRecyclerView
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+
         mRecyclerView.setLayoutManager(layoutManager);
 
-        // COMPLETE (40) Use setHasFixedSize(true) on mRecyclerView to designate that all items in the list will have the same size
         /*
          * Use this setting to improve performance if you know that changes in content do not
          * change the child layout size in the RecyclerView
          */
         mRecyclerView.setHasFixedSize(true);
 
-        // COMPLETE (41) set mForecastAdapter equal to a new ForecastAdapter
+        // TODO (11) Pass in 'this' as the ForecastAdapterOnClickHandler
         /*
          * The ForecastAdapter is responsible for linking our weather data with the Views that
          * will end up displaying our weather data.
          */
         mForecastAdapter = new ForecastAdapter();
 
-        // COMPLETE (42) Use mRecyclerView.setAdapter and pass in mForecastAdapter
         /* Setting the adapter attaches it to the RecyclerView in our layout. */
         mRecyclerView.setAdapter(mForecastAdapter);
 
@@ -125,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
         new FetchWeatherTask().execute(location);
     }
 
+    // TODO (9) Override ForecastAdapterOnClickHandler's onClick method
+    // TODO (10) Show a Toast when an item is clicked, displaying that item's weather data
+
     /**
      * This method will make the View for the weather data visible and
      * hide the error message.
@@ -135,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
     private void showWeatherDataView() {
         /* First, make sure the error is invisible */
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        // COMPLETE (43) Show mRecyclerView, not mWeatherTextView
         /* Then, make sure the weather data is visible */
         mRecyclerView.setVisibility(View.VISIBLE);
     }
@@ -148,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
      * need to check whether each view is currently visible or invisible.
      */
     private void showErrorMessage() {
-        // COMPLETE (44) Hide mRecyclerView, not mWeatherTextView
         /* First, hide the currently visible data */
         mRecyclerView.setVisibility(View.INVISIBLE);
         /* Then, show the error */
@@ -194,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (weatherData != null) {
                 showWeatherDataView();
-                // COMPLETE (45) Instead of iterating through every string, use mForecastAdapter.setWeatherData and pass in the weather data
                 mForecastAdapter.setWeatherData(weatherData);
             } else {
                 showErrorMessage();
@@ -217,7 +199,6 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            // COMPLETE (46) Instead of setting the text to "", set the adapter to null before refreshing
             mForecastAdapter.setWeatherData(null);
             loadWeatherData();
             return true;
