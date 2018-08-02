@@ -34,30 +34,12 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
 
     // Within forecast_list_item.xml //////////////////////////////////////////////////////////////
-    // TODO (5) Add a layout for an item in the list called forecast_list_item.xml
+    // COMPLETE (5) Add a layout for an item in the list called forecast_list_item.xml
     // Within forecast_list_item.xml //////////////////////////////////////////////////////////////
 
 
     // Within ForecastAdapter.java /////////////////////////////////////////////////////////////////
-    // TODO (15) Add a class file called ForecastAdapter
-    // Within ForecastAdapterViewHolder ///////////////////////////////////////////////////////////
-
-
-    // Within ForecastAdapterViewHolder ///////////////////////////////////////////////////////////
-
-
-    // TODO (24) Override onCreateViewHolder
-    // TODO (25) Within onCreateViewHolder, inflate the list item xml into a view
-    // TODO (26) Within onCreateViewHolder, return a new ForecastAdapterViewHolder with the above view passed in as a parameter
-
-    // TODO (27) Override onBindViewHolder
-    // TODO (28) Set the text of the TextView to the weather for this list item's position
-
-    // TODO (29) Override getItemCount
-    // TODO (30) Return 0 if mWeatherData is null, or the size of mWeatherData if it is not null
-
-    // TODO (31) Create a setWeatherData method that saves the weatherData to mWeatherData
-    // TODO (32) After you save mWeatherData, call notifyDataSetChanged
+    // COMPLETE (15) Add a class file called ForecastAdapter
     // Within ForecastAdapter.java /////////////////////////////////////////////////////////////////
 
 
