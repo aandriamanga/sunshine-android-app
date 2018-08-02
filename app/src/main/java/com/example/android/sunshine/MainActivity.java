@@ -15,15 +15,19 @@
  */
 package com.example.android.sunshine;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
 import com.microsoft.appcenter.crashes.Crashes;
@@ -34,15 +38,15 @@ import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+// COMPLETE (8) Implement ForecastAdapterOnClickHandler from the MainActivity
+public class MainActivity extends AppCompatActivity implements ForecastAdapter.ForecastAdapterOnClickHandler{
 
-    private TextView mWeatherTextView;
+    private RecyclerView mRecyclerView;
+    private ForecastAdapter mForecastAdapter;
 
-    // COMPLETE (6) Add a TextView variable for the error message display
-    private TextView mErrorMessageTextView;
+    private TextView mErrorMessageDisplay;
 
-    // COMPLETE (16) Add a ProgressBar variable to show and hide the progress bar
-    private ProgressBar mLoadingContentProgressBar;
+    private ProgressBar mLoadingIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,16 +57,48 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_forecast);
 
         /*
-         * Using findViewById, we get a reference to our TextView from xml. This allows us to
-         * do things like set the text of the TextView.
+         * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
+         * do things like set the adapter of the RecyclerView and toggle the visibility.
          */
-        mWeatherTextView = (TextView) findViewById(R.id.tv_weather_data);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_forecast);
 
-        // COMPLETE (7) Find the TextView for the error message using findViewById
-        mErrorMessageTextView = (TextView) findViewById(R.id.tv_error_message);
+        /* This TextView is used to display errors and will be hidden if there are no errors */
+        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
 
-        // COMPLETE (17) Find the ProgressBar using findViewById
-        mLoadingContentProgressBar = (ProgressBar) findViewById(R.id.pb_loading_content);
+        /*
+         * LinearLayoutManager can support HORIZONTAL or VERTICAL orientations. The reverse layout
+         * parameter is useful mostly for HORIZONTAL layouts that should reverse for right to left
+         * languages.
+         */
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        /*
+         * Use this setting to improve performance if you know that changes in content do not
+         * change the child layout size in the RecyclerView
+         */
+        mRecyclerView.setHasFixedSize(true);
+
+        // COMPLETE (11) Pass in 'this' as the ForecastAdapterOnClickHandler
+        /*
+         * The ForecastAdapter is responsible for linking our weather data with the Views that
+         * will end up displaying our weather data.
+         */
+        mForecastAdapter = new ForecastAdapter(this);
+
+        /* Setting the adapter attaches it to the RecyclerView in our layout. */
+        mRecyclerView.setAdapter(mForecastAdapter);
+
+        /*
+         * The ProgressBar that will indicate to the user that we are loading data. It will be
+         * hidden when no data is loading.
+         *
+         * Please note: This so called "ProgressBar" isn't a bar by default. It is more of a
+         * circle. We didn't make the rules (or the names of Views), we just follow them.
+         */
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
         /* Once all of our views are setup, we can load the weather data. */
         loadWeatherData();
@@ -73,29 +109,54 @@ public class MainActivity extends AppCompatActivity {
      * background method to get the weather data in the background.
      */
     private void loadWeatherData() {
-        // COMPLETE (20) Call showWeatherDataView before executing the AsyncTask
         showWeatherDataView();
+
         String location = SunshinePreferences.getPreferredWeatherLocation(this);
         new FetchWeatherTask().execute(location);
     }
 
-    // COMPLETE (8) Create a method called showWeatherDataView that will hide the error message and show the weather data
-    private void showWeatherDataView() {
-        mWeatherTextView.setVisibility(View.VISIBLE);
-        mErrorMessageTextView.setVisibility(View.INVISIBLE);
+    // COMPLETE (9) Override ForecastAdapterOnClickHandler's onClick method
+    // COMPLETE (10) Show a Toast when an item is clicked, displaying that item's weather data
+    @Override
+    public void onClick(String weatherForDay) {
+        Context context = this;
+        Toast.makeText(context, weatherForDay, Toast.LENGTH_SHORT).show();
     }
 
-    // COMPLETE (9) Create a method called showErrorMessage that will hide the weather data and show the error message
-    private void showErrorMessage() {
-        mWeatherTextView.setVisibility(View.INVISIBLE);
-        mErrorMessageTextView.setVisibility(View.VISIBLE);
+    /**
+     * This method will make the View for the weather data visible and
+     * hide the error message.
+     * <p>
+     * Since it is okay to redundantly set the visibility of a View, we don't
+     * need to check whether each view is currently visible or invisible.
+     */
+    private void showWeatherDataView() {
+        /* First, make sure the error is invisible */
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        /* Then, make sure the weather data is visible */
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
+
+    /**
+     * This method will make the error message visible and hide the weather
+     * View.
+     * <p>
+     * Since it is okay to redundantly set the visibility of a View, we don't
+     * need to check whether each view is currently visible or invisible.
+     */
+    private void showErrorMessage() {
+        /* First, hide the currently visible data */
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        /* Then, show the error */
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+    }
+
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
-        // COMPLETE (18) Within your AsyncTask, override the method onPreExecute and show the loading indicator
         @Override
         protected void onPreExecute() {
-            mLoadingContentProgressBar.setVisibility(View.VISIBLE);
+            super.onPreExecute();
+            mLoadingIndicator.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -126,26 +187,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String[] weatherData) {
-            // COMPLETE (19) As soon as the data is finished loading, hide the loading indicator
-            mLoadingContentProgressBar.setVisibility(View.INVISIBLE);
-
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (weatherData != null) {
-                // COMPLETE (11) If the weather data was not null, make sure the data view is visible
                 showWeatherDataView();
-                /*
-                 * Iterate through the array and append the Strings to the TextView. The reason why we add
-                 * the "\n\n\n" after the String is to give visual separation between each String in the
-                 * TextView. Later, we'll learn about a better way to display lists of data.
-                 */
-                for (String weatherString : weatherData) {
-                    mWeatherTextView.append((weatherString) + "\n\n\n");
-                }
-            }else {
-                // COMPLETE (10) If the weather data was null, show the error message
+                mForecastAdapter.setWeatherData(weatherData);
+            } else {
                 showErrorMessage();
             }
-
-
         }
     }
 
@@ -164,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            mWeatherTextView.setText("");
+            mForecastAdapter.setWeatherData(null);
             loadWeatherData();
             return true;
         }
